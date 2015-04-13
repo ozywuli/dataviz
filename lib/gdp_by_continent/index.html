@@ -39,8 +39,7 @@ rect.disabled {
 }
 
 h1 {
-  font-size: 14px;
-  text-align: center;
+  font-size: 21px;
 }
 
 </style>
@@ -50,7 +49,7 @@ h1 {
 
 
 
-<h1>GDP by Continents</h1>
+<h1>Percentage of World GDP by Continents</h1>
 <div id="chart"></div>
 
 <script src="../../assets/js/d3.js"></script>
@@ -68,14 +67,14 @@ var radius = Math.min(width, height) / 2;
 var donutWidth = 75;
 
 
-
-var color = d3.scale.category20b();
+/*
+var color = d3.scale.category20b();*/
 
 
 // has stroke and fill bug...
-/*
+
 var color = d3.scale.ordinal()
-  .range(["A60F2B", "#648C85", "#B3F2C9", "#528C18", "#C3F25C"]);*/
+  .range(["red", "blue", "green", "teal", "silver"]);
 
 
 var svg = d3.select("#chart")
