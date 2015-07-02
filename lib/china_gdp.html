@@ -4,19 +4,191 @@
   <meta charset="UTF-8">
   <title>Document</title>
 
+<style>
 
+.bar {
+  fill: rgb(0, 128, 128);
+}
+
+.bar:hover {
+  fill: rgba(0, 128, 128, 0.9);
+}
+
+.axis {
+  font: 10px sans-serif;
+}
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.x.axis path {
+  display: none;
+}
+
+.tooltip {
+  background: #eee;
+  box-shadow: 0 0 5px #999999;
+  color: #333;
+  display: none;
+  font-size: 12px;
+  left: 130px;
+  padding: 10px;
+  position: absolute;
+  text-align: center;
+  top: 95px;
+  width: 80px;
+  z-index: 10;
+}
+
+</style>
 
 </head>
+
 <body>
 
 
+<div class="chart"></div>
+
+<p class="source">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Beatae, corporis maiores! Animi quisquam placeat vero nulla mollitia quibusdam accusamus eligendi, iusto nemo nostrum, inventore maiores maxime, tenetur quaerat amet blanditiis.</p>
 
 
 
 
 
-<script src="../assets/js/jquery.js"></script>
-<script src="../assets/js/d3.js"></script>
+
+<script src="http://d3js.org/d3.v3.min.js"></script>
+
+<script>
+
+
+var tooltip = d3.select('.chart')            // NEW
+  .append('div')                             // NEW
+  .attr('class', 'tooltip');                 // NEW
+
+tooltip.append('div')                        // NEW
+  .attr('class', 'label');                   // NEW
+
+tooltip.append('div')                        // NEW
+  .attr('class', 'count');                   // NEW
+
+tooltip.append('div')                        // NEW
+  .attr('class', 'percent');                 // NEW
+
+
+// store margin values in var
+var margin = {top: 20, right: 20, bottom: 30, left: 50};
+var width = 780 - margin.left - margin.right;
+var height = 500 - margin.top - margin.bottom;
+
+// set bar width
+var x = d3.scale.ordinal()
+    .rangeRoundBands([0, width], .1);
+
+// set bar height
+var y = d3.scale.linear()
+    .range([height, 0]);
+
+
+// Set the x scale along the bottom horizontal axis
+var xAxis = d3.svg.axis()
+    .scale(x)
+    .orient("bottom");
+
+// Set the y-scale along the left vertical axis
+var yAxis = d3.svg.axis()
+    .scale(y)
+    .orient("left")
+    .ticks(10, "$");
+
+// set chart margins
+var svg = d3.select(".chart").append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+
+// Retrieve data from tsv file via tsv-specific ajax function
+d3.tsv("data2.tsv", type, function(error, data) {
+  x.domain(data.map(function(d) { return d.year; }));
+  y.domain([0, d3.max(data, function(d) { return d.gdp; })]);
+
+
+
+// Control the x-axis ticks
+  svg.append("g")
+      .attr("class", "x axis")
+      .attr("transform", "translate(0," + height + ")")
+      .call(xAxis);
+
+
+// Append a title to the y-axis
+  svg.append("g")
+      .attr("class", "y axis")
+      .call(yAxis)
+    .append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 6)
+      .attr("dy", "12px")
+      .style("text-anchor", "end")
+      .text("GDP (billions)");
+
+// Append the bars to the chart
+var bar = svg.selectAll(".bar")
+      .data(data)
+    .enter().append("rect")
+      .attr("class", "bar")
+      .attr("x", function(d) { return x(d.year); })
+      .attr("width", x.rangeBand() )
+      .attr("y", function(d) { return y(d.gdp); })
+      .attr("height", function(d) { return height - y(d.gdp); });
+
+
+
+bar.on('mouseover', function(d) {           // NEW
+  // Code                                    // NEW
+
+tooltip.style('display', 'block');
+tooltip.select('.count').html(d.gdp);
+
+
+
+});                                          // NEW
+
+bar.on('mouseout', function(d) {            // NEW
+  // Code                                    // NEW
+
+  tooltip.style('display', 'none');
+});                                          // NEW
+
+
+document.addEventListener('mousemove', fn, false);
+
+function fn(e) {
+  console.log(e.pageX);
+}
+
+
+});
+
+
+function type(d) {
+  d.gdp = +d.gdp;
+  return d;
+}
+
+
+</script>
+
+
+
+
+
+
 
 
 <script>
